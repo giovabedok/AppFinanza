@@ -29,6 +29,7 @@ data class CruscottoUiState(
     val spesePersonaliMedie: Double = 0.0,
     val datiMensili: List<DatoMensile> = emptyList(),
     val ripartizioneMese: List<VoceRipartizione> = emptyList(),
+    val percentuali: List<Double> = emptyList(),
     val percentualiCorrette: Boolean = true,
     val caricato: Boolean = false
 ) {

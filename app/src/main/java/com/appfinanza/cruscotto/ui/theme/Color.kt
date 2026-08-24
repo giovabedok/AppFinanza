@@ -18,6 +18,10 @@ val Bordo = Color(0xFFE6DFD2)
 val RossoErrore = Color(0xFFA8412C)
 val VerdeSuccesso = Color(0xFF3D6B4C)
 
+// Sfondo scuro dei form (dentro alle card in Petrolio) e loro bordo.
+val PetrolioCampo = Color(0xFF17606F)
+val PetrolioBordoCampo = Color(0xFF2C7686)
+
 // Colori delle cinque voci di ripartizione, coerenti con la ciambella e il "nastro".
 val ColoreTasse = Petrolio
 val ColoreSpeseProfessionali = Senape

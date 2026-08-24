@@ -1,4 +1,5 @@
 <resources>
-    <string name="app_name">Bussola</string>
+    <string name="app_name">Le mie Finanze</string>
     <string name="app_tagline">Quando arriva un euro, sa già dove andare.</string>
+    <string name="app_byline">by Giovanni Bedocchi</string>
 </resources>

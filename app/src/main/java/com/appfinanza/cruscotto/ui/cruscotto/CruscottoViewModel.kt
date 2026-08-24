@@ -83,6 +83,13 @@ class CruscottoViewModel(private val repository: FinanzaRepository) : ViewModel(
             spesePersonaliMedie = ripartizione.spesePersonaliMedie,
             datiMensili = datiMensili,
             ripartizioneMese = ripartizioneMese,
+            percentuali = listOf(
+                ripartizione.pctTasse,
+                ripartizione.pctSpeseProfessionali,
+                ripartizione.pctStipendio,
+                ripartizione.pctFondoSicurezza,
+                ripartizione.pctFuturo
+            ),
             percentualiCorrette = ripartizione.percentualiCorrette,
             caricato = true
         )
