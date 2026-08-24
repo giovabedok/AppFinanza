@@ -5,11 +5,13 @@ import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.PieChart
 import androidx.compose.material.icons.filled.Receipt
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
 
 enum class AppDestination(val route: String, val etichetta: String, val icona: ImageVector) {
     CRUSCOTTO("cruscotto", "Cruscotto", Icons.Filled.Dashboard),
     INCASSI("incassi", "Incassi", Icons.Filled.AccountBalanceWallet),
     SPESE("spese", "Spese", Icons.Filled.Receipt),
-    RIPARTIZIONE("ripartizione", "Ripartizione", Icons.Filled.PieChart)
+    RIPARTIZIONE("ripartizione", "Ripartizione", Icons.Filled.PieChart),
+    IMPOSTAZIONI("impostazioni", "Impostazioni", Icons.Filled.Settings)
 }

@@ -1,16 +1,22 @@
 package com.appfinanza.cruscotto.ui.incassi
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Payments
+import androidx.compose.material.icons.filled.SavedSearch
 import androidx.compose.material3.Card
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -32,7 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.appfinanza.cruscotto.data.model.Incasso
 import com.appfinanza.cruscotto.ui.common.formattaEuro
-import com.appfinanza.cruscotto.ui.theme.VerdeAccento
+import com.appfinanza.cruscotto.ui.theme.Salvia
 import java.time.format.DateTimeFormatter
 
 private val formatoData = DateTimeFormatter.ofPattern("dd/MM/yyyy")
@@ -45,7 +51,12 @@ fun IncassiScreen(viewModel: IncassiViewModel) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Incassi") },
+                title = {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Filled.Payments, contentDescription = null, modifier = Modifier.padding(end = 8.dp))
+                        Text("Incassi")
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary
@@ -53,7 +64,11 @@ fun IncassiScreen(viewModel: IncassiViewModel) {
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { mostraDialogo = true }) {
+            FloatingActionButton(
+                onClick = { mostraDialogo = true },
+                containerColor = Salvia,
+                contentColor = androidx.compose.ui.graphics.Color.White
+            ) {
                 Icon(Icons.Filled.Add, contentDescription = "Aggiungi incasso")
             }
         }
@@ -67,10 +82,17 @@ fun IncassiScreen(viewModel: IncassiViewModel) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
+                Icon(
+                    Icons.Filled.SavedSearch,
+                    contentDescription = null,
+                    modifier = Modifier.size(56.dp),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                )
                 Text(
                     "Nessun incasso registrato. Tocca + per aggiungere il primo pagamento ricevuto.",
                     textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = 12.dp)
                 )
             }
         } else {
@@ -109,17 +131,27 @@ private fun RigaIncasso(incasso: Incasso, onElimina: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Column {
-                Text(incasso.cliente, style = MaterialTheme.typography.titleMedium)
-                Text(incasso.prestazione, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                Text(incasso.data.format(formatoData), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .background(Salvia.copy(alpha = 0.14f), CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(Icons.Filled.Payments, contentDescription = null, tint = Salvia, modifier = Modifier.size(20.dp))
+                }
+                Column(Modifier.padding(start = 12.dp)) {
+                    Text(incasso.cliente, style = MaterialTheme.typography.titleMedium)
+                    Text(incasso.prestazione, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(incasso.data.format(formatoData), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = formattaEuro(incasso.importo),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = VerdeAccento
+                    color = Salvia
                 )
                 IconButton(onClick = onElimina) {
                     Icon(Icons.Filled.Delete, contentDescription = "Elimina", tint = MaterialTheme.colorScheme.onSurfaceVariant)

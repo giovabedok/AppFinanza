@@ -27,8 +27,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.appfinanza.cruscotto.ui.cruscotto.DatoMensile
-import com.appfinanza.cruscotto.ui.theme.AranciAccento
-import com.appfinanza.cruscotto.ui.theme.BluNotte
+import com.appfinanza.cruscotto.ui.theme.Petrolio
+import com.appfinanza.cruscotto.ui.theme.Senape
 
 /**
  * Grafico a barre affiancate Entrate/Uscite per i 12 mesi dell'anno,
@@ -37,8 +37,8 @@ import com.appfinanza.cruscotto.ui.theme.BluNotte
 @Composable
 fun BarChartEntrateUscite(dati: List<DatoMensile>, modifier: Modifier = Modifier) {
     val textMeasurer = rememberTextMeasurer()
-    val coloreEntrate = BluNotte
-    val coloreUscite = AranciAccento
+    val coloreEntrate = Petrolio
+    val coloreUscite = Senape
     val coloreGriglia = MaterialTheme.colorScheme.outlineVariant
     val coloreTesto = MaterialTheme.colorScheme.onSurfaceVariant
 

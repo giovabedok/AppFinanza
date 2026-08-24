@@ -9,12 +9,21 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.TrendingUp
+import androidx.compose.material.icons.filled.AccountBalance
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.Explore
+import androidx.compose.material.icons.filled.Payments
+import androidx.compose.material.icons.filled.Receipt
+import androidx.compose.material.icons.filled.Savings
+import androidx.compose.material.icons.filled.Shield
+import androidx.compose.material.icons.filled.WarningAmber
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
@@ -38,8 +47,12 @@ import com.appfinanza.cruscotto.ui.common.formattaEuro
 import com.appfinanza.cruscotto.ui.components.BarChartEntrateUscite
 import com.appfinanza.cruscotto.ui.components.KpiCard
 import com.appfinanza.cruscotto.ui.components.PieChartRipartizione
-import com.appfinanza.cruscotto.ui.theme.RossoAvviso
-import com.appfinanza.cruscotto.ui.theme.VerdeAccento
+import com.appfinanza.cruscotto.ui.theme.Blu
+import com.appfinanza.cruscotto.ui.theme.Corallo
+import com.appfinanza.cruscotto.ui.theme.Petrolio
+import com.appfinanza.cruscotto.ui.theme.RossoErrore
+import com.appfinanza.cruscotto.ui.theme.Salvia
+import com.appfinanza.cruscotto.ui.theme.Senape
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,7 +62,12 @@ fun CruscottoScreen(viewModel: CruscottoViewModel) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Cruscotto finanziario") },
+                title = {
+                    Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+                        Icon(Icons.Filled.Explore, contentDescription = null, modifier = Modifier.padding(end = 8.dp))
+                        Text("Bussola")
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary
@@ -74,13 +92,19 @@ fun CruscottoScreen(viewModel: CruscottoViewModel) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 12.dp),
-                    colors = CardDefaults.cardColors(containerColor = RossoAvviso.copy(alpha = 0.12f))
+                    colors = CardDefaults.cardColors(containerColor = RossoErrore.copy(alpha = 0.12f))
                 ) {
-                    Text(
-                        text = "Attenzione: le percentuali nel foglio Ripartizione non sommano al 100%.",
+                    Row(
                         modifier = Modifier.padding(12.dp),
-                        color = RossoAvviso
-                    )
+                        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Filled.WarningAmber, contentDescription = null, tint = RossoErrore)
+                        Text(
+                            text = "Attenzione: le percentuali nella scheda Ripartizione non sommano al 100%.",
+                            modifier = Modifier.padding(start = 8.dp),
+                            color = RossoErrore
+                        )
+                    }
                 }
             }
 
@@ -95,25 +119,31 @@ fun CruscottoScreen(viewModel: CruscottoViewModel) {
                     .horizontalScroll(rememberScrollState()),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                KpiCard("Incassi del mese", uiState.incassiDelMese, coloreValore = VerdeAccento)
-                KpiCard("Spese professionali", uiState.speseProfessionaliDelMese, coloreValore = RossoAvviso)
-                KpiCard("Da accantonare per tasse", uiState.daAccantonareTasse)
-                KpiCard("Stipendio personale", uiState.stipendioPersonale)
-                KpiCard("Fondo sicurezza", uiState.daFondoSicurezza)
-                KpiCard("Futuro e investimenti", uiState.daFuturo)
+                KpiCard("Incassi del mese", uiState.incassiDelMese, Icons.Filled.Payments, coloreAccento = Salvia)
+                KpiCard("Spese professionali", uiState.speseProfessionaliDelMese, Icons.Filled.Receipt, coloreAccento = Senape)
+                KpiCard("Da accantonare per tasse", uiState.daAccantonareTasse, Icons.Filled.AccountBalance, coloreAccento = Petrolio)
+                KpiCard("Stipendio personale", uiState.stipendioPersonale, Icons.Filled.Savings, coloreAccento = Corallo)
+                KpiCard("Fondo sicurezza", uiState.daFondoSicurezza, Icons.Filled.Shield, coloreAccento = Blu)
+                KpiCard("Futuro e investimenti", uiState.daFuturo, Icons.AutoMirrored.Filled.TrendingUp, coloreAccento = Salvia)
             }
 
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 16.dp)
+                    .padding(top = 16.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
             ) {
                 Column(Modifier.padding(16.dp)) {
-                    Text("Incassi totali dell'anno", style = MaterialTheme.typography.bodyMedium)
+                    Text(
+                        "Incassi totali dell'anno",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
+                    )
                     Text(
                         text = formattaEuro(uiState.incassiTotaliAnno),
                         style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onPrimary
                     )
                 }
             }
@@ -144,16 +174,19 @@ fun CruscottoScreen(viewModel: CruscottoViewModel) {
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column(Modifier.padding(16.dp)) {
                     RigaSicurezza(
+                        Icons.Filled.Shield,
                         "Mesi di autonomia",
                         String.format("%.1f mesi", uiState.mesiAutonomia),
                         "Obiettivo: 4-6 mesi."
                     )
                     RigaSicurezza(
+                        Icons.Filled.Savings,
                         "Fondo sicurezza accumulato",
                         formattaEuro(uiState.fondoSicurezzaAccumulato),
-                        "Modificabile nel foglio Ripartizione."
+                        "Modificabile nella scheda Ripartizione."
                     )
                     RigaSicurezza(
+                        Icons.Filled.Receipt,
                         "Spese personali medie al mese",
                         formattaEuro(uiState.spesePersonaliMedie),
                         null
@@ -162,7 +195,7 @@ fun CruscottoScreen(viewModel: CruscottoViewModel) {
             }
 
             Text(
-                text = "Le percentuali di questo file sono indicazioni organizzative, non consulenza fiscale: confermale con il commercialista.",
+                text = "Le percentuali di questa app sono indicazioni organizzative, non consulenza fiscale: confermale con il commercialista.",
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 24.dp, bottom = 8.dp)
@@ -172,14 +205,17 @@ fun CruscottoScreen(viewModel: CruscottoViewModel) {
 }
 
 @Composable
-private fun RigaSicurezza(titolo: String, valore: String, sottotitolo: String?) {
-    Column(Modifier.padding(vertical = 6.dp)) {
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text(titolo, style = MaterialTheme.typography.bodyLarge)
-            Text(valore, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold)
-        }
-        if (sottotitolo != null) {
-            Text(sottotitolo, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+private fun RigaSicurezza(icona: androidx.compose.ui.graphics.vector.ImageVector, titolo: String, valore: String, sottotitolo: String?) {
+    Row(Modifier.padding(vertical = 8.dp), verticalAlignment = androidx.compose.ui.Alignment.Top) {
+        Icon(icona, contentDescription = null, tint = MaterialTheme.colorScheme.secondary, modifier = Modifier.padding(top = 2.dp))
+        Column(Modifier.padding(start = 12.dp).fillMaxWidth()) {
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                Text(titolo, style = MaterialTheme.typography.bodyLarge)
+                Text(valore, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold)
+            }
+            if (sottotitolo != null) {
+                Text(sottotitolo, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
         }
     }
 }
@@ -195,6 +231,7 @@ private fun SelettorePeriodo(anno: Int, mese: Int, onCambiaPeriodo: (Int, Int) -
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(12.dp),
+            verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             IconButton(onClick = {
@@ -214,7 +251,7 @@ private fun SelettorePeriodo(anno: Int, mese: Int, onCambiaPeriodo: (Int, Int) -
                     value = "${nomiMesi[mese - 1]} $anno",
                     onValueChange = {},
                     readOnly = true,
-                    label = { Text("Periodo") },
+                    leadingIcon = { Icon(Icons.Filled.CalendarMonth, contentDescription = null) },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = espansoMenuMese) },
                     modifier = Modifier.menuAnchor(androidx.compose.material3.MenuAnchorType.PrimaryNotEditable)
                 )

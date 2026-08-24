@@ -2,20 +2,33 @@ package com.appfinanza.cruscotto.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Palette ripresa dal cruscotto Excel originale.
-val BluNotte = Color(0xFF1B3A5C)
-val BluNotteChiaro = Color(0xFF2E5478)
-val CremaGiallo = Color(0xFFFFF2CC)
-val GrigioChiaro = Color(0xFFF5F5F0)
-val VerdeChiaro = Color(0xFFE8F3EC)
-val VerdeAccento = Color(0xFF3E8E5C)
-val RossoAvviso = Color(0xFFC0392B)
-val AranciAccento = Color(0xFFDD9A34)
+// Palette calda ispirata al mockup di riferimento: crema, petrolio, corallo, senape, salvia.
+val Crema = Color(0xFFFBF7EF)
+val Carta = Color(0xFFFFFFFF)
+val Petrolio = Color(0xFF0F4C5C)
+val PetrolioScuro = Color(0xFF0B3743)
+val Teal = Color(0xFF1B7F84)
+val Corallo = Color(0xFFE8735C)
+val Senape = Color(0xFFE0A32E)
+val Salvia = Color(0xFF6E9E7A)
+val Blu = Color(0xFF4A7FA5)
+val Inchiostro = Color(0xFF22383D)
+val Grigio = Color(0xFF7C8B8E)
+val Bordo = Color(0xFFE6DFD2)
+val RossoErrore = Color(0xFFA8412C)
+val VerdeSuccesso = Color(0xFF3D6B4C)
 
-val ColoriGrafico = listOf(
-    BluNotte,
-    VerdeAccento,
-    AranciAccento,
-    Color(0xFF7B6FA6),
-    Color(0xFFB5533C)
+// Colori delle cinque voci di ripartizione, coerenti con la ciambella e il "nastro".
+val ColoreTasse = Petrolio
+val ColoreSpeseProfessionali = Senape
+val ColoreStipendio = Corallo
+val ColoreFondoSicurezza = Blu
+val ColoreFuturo = Salvia
+
+val ColoriRipartizione = listOf(
+    ColoreTasse,
+    ColoreSpeseProfessionali,
+    ColoreStipendio,
+    ColoreFondoSicurezza,
+    ColoreFuturo
 )

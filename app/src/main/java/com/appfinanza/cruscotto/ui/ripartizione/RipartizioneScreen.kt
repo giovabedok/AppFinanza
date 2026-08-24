@@ -6,10 +6,19 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Insights
+import androidx.compose.material.icons.filled.PieChart
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -22,14 +31,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.appfinanza.cruscotto.ui.common.formattaEuro
-import com.appfinanza.cruscotto.ui.theme.RossoAvviso
-import com.appfinanza.cruscotto.ui.theme.VerdeAccento
+import com.appfinanza.cruscotto.ui.theme.ColoriRipartizione
+import com.appfinanza.cruscotto.ui.theme.RossoErrore
+import com.appfinanza.cruscotto.ui.theme.Salvia
 
 @Composable
 fun RipartizioneScreen(viewModel: RipartizioneViewModel) {
@@ -68,7 +79,12 @@ fun RipartizioneScreen(viewModel: RipartizioneViewModel) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Ripartizione") },
+                title = {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Filled.PieChart, contentDescription = null, modifier = Modifier.padding(end = 8.dp))
+                        Text("Ripartizione")
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary
@@ -82,11 +98,10 @@ fun RipartizioneScreen(viewModel: RipartizioneViewModel) {
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp)
         ) {
-            Text(
-                "Come divido l'incasso",
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(bottom = 4.dp)
-            )
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(bottom = 4.dp)) {
+                Icon(Icons.Filled.PieChart, contentDescription = null, tint = MaterialTheme.colorScheme.secondary, modifier = Modifier.padding(end = 8.dp))
+                Text("Come divido l'incasso", style = MaterialTheme.typography.titleLarge)
+            }
             Text(
                 "Decidi come si divide ogni euro che entra. La somma deve fare 100%.",
                 style = MaterialTheme.typography.bodyMedium,
@@ -96,11 +111,11 @@ fun RipartizioneScreen(viewModel: RipartizioneViewModel) {
 
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column(Modifier.padding(16.dp)) {
-                    CampoPercentuale("Tasse e contributi", testoTasse) { testoTasse = it }
-                    CampoPercentuale("Spese professionali", testoSpese) { testoSpese = it }
-                    CampoPercentuale("Stipendio personale", testoStipendio) { testoStipendio = it }
-                    CampoPercentuale("Fondo sicurezza", testoFondo) { testoFondo = it }
-                    CampoPercentuale("Futuro e investimenti", testoFuturo) { testoFuturo = it }
+                    CampoPercentuale("Tasse e contributi", testoTasse, ColoriRipartizione[0]) { testoTasse = it }
+                    CampoPercentuale("Spese professionali", testoSpese, ColoriRipartizione[1]) { testoSpese = it }
+                    CampoPercentuale("Stipendio personale", testoStipendio, ColoriRipartizione[2]) { testoStipendio = it }
+                    CampoPercentuale("Fondo sicurezza", testoFondo, ColoriRipartizione[3]) { testoFondo = it }
+                    CampoPercentuale("Futuro e investimenti", testoFuturo, ColoriRipartizione[4]) { testoFuturo = it }
 
                     Row(
                         modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
@@ -110,13 +125,13 @@ fun RipartizioneScreen(viewModel: RipartizioneViewModel) {
                         Text(
                             "${"%.1f".format(totalePercentuali)}%",
                             fontWeight = FontWeight.Bold,
-                            color = if (percentualiCorrette) VerdeAccento else RossoAvviso
+                            color = if (percentualiCorrette) Salvia else RossoErrore
                         )
                     }
                     Text(
                         text = if (percentualiCorrette) "Percentuali corrette: totale 100%." else "Attenzione: le percentuali non fanno 100%.",
                         style = MaterialTheme.typography.labelSmall,
-                        color = if (percentualiCorrette) VerdeAccento else RossoAvviso,
+                        color = if (percentualiCorrette) Salvia else RossoErrore,
                         modifier = Modifier.padding(top = 4.dp)
                     )
 
@@ -136,11 +151,7 @@ fun RipartizioneScreen(viewModel: RipartizioneViewModel) {
                 }
             }
 
-            Text(
-                "I tuoi dati personali",
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(top = 24.dp, bottom = 12.dp)
-            )
+            TitoloSezione(Icons.Filled.Person, "I tuoi dati personali")
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column(Modifier.padding(16.dp)) {
                     OutlinedTextField(
@@ -169,11 +180,7 @@ fun RipartizioneScreen(viewModel: RipartizioneViewModel) {
                 }
             }
 
-            Text(
-                "Le tre medie da guardare",
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(top = 24.dp, bottom = 12.dp)
-            )
+            TitoloSezione(Icons.Filled.Insights, "Le tre medie da guardare")
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column(Modifier.padding(16.dp)) {
                     RigaMedia("Media mensile dell'anno", uiState.mediaMensileAnno, "Il tuo reddito normale.")
@@ -193,12 +200,27 @@ fun RipartizioneScreen(viewModel: RipartizioneViewModel) {
 }
 
 @Composable
-private fun CampoPercentuale(etichetta: String, valore: String, onValueChange: (String) -> Unit) {
+private fun TitoloSezione(icona: androidx.compose.ui.graphics.vector.ImageVector, titolo: String) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.padding(top = 24.dp, bottom = 12.dp)
+    ) {
+        Icon(icona, contentDescription = null, tint = MaterialTheme.colorScheme.secondary, modifier = Modifier.padding(end = 8.dp))
+        Text(titolo, style = MaterialTheme.typography.titleLarge)
+    }
+}
+
+@Composable
+private fun CampoPercentuale(etichetta: String, valore: String, colore: androidx.compose.ui.graphics.Color, onValueChange: (String) -> Unit) {
     Row(
         modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(etichetta, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(top = 16.dp))
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
+            Box(modifier = Modifier.size(10.dp).background(colore, CircleShape))
+            Text(etichetta, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(start = 10.dp))
+        }
         OutlinedTextField(
             value = valore,
             onValueChange = onValueChange,

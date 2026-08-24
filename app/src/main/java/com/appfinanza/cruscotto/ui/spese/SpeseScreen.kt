@@ -1,17 +1,24 @@
 package com.appfinanza.cruscotto.ui.spese
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Inbox
+import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -33,7 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.appfinanza.cruscotto.data.model.Spesa
 import com.appfinanza.cruscotto.ui.common.formattaEuro
-import com.appfinanza.cruscotto.ui.theme.AranciAccento
+import com.appfinanza.cruscotto.ui.theme.Senape
 import java.time.format.DateTimeFormatter
 
 private val formatoData = DateTimeFormatter.ofPattern("dd/MM/yyyy")
@@ -46,7 +53,12 @@ fun SpeseScreen(viewModel: SpeseViewModel) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Spese professionali") },
+                title = {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Filled.Receipt, contentDescription = null, modifier = Modifier.padding(end = 8.dp))
+                        Text("Spese professionali")
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary
@@ -54,7 +66,11 @@ fun SpeseScreen(viewModel: SpeseViewModel) {
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { mostraDialogo = true }) {
+            FloatingActionButton(
+                onClick = { mostraDialogo = true },
+                containerColor = Senape,
+                contentColor = androidx.compose.ui.graphics.Color.White
+            ) {
                 Icon(Icons.Filled.Add, contentDescription = "Aggiungi spesa")
             }
         }
@@ -68,10 +84,17 @@ fun SpeseScreen(viewModel: SpeseViewModel) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
+                Icon(
+                    Icons.Filled.Inbox,
+                    contentDescription = null,
+                    modifier = Modifier.size(56.dp),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                )
                 Text(
                     "Nessuna spesa registrata. Tocca + per aggiungere la prima spesa professionale.",
                     textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = 12.dp)
                 )
             }
         } else {
@@ -110,22 +133,38 @@ private fun RigaSpesa(spesa: Spesa, onElimina: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Column {
-                Text(spesa.descrizione, style = MaterialTheme.typography.titleMedium)
-                AssistChip(onClick = {}, label = { Text(spesa.categoria) }, modifier = Modifier.padding(top = 4.dp))
-                Text(
-                    spesa.data.format(formatoData),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(top = 4.dp)
-                )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .background(Senape.copy(alpha = 0.16f), CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(iconaCategoria(spesa.categoria), contentDescription = null, tint = Senape, modifier = Modifier.size(20.dp))
+                }
+                Column(Modifier.padding(start = 12.dp)) {
+                    Text(spesa.descrizione, style = MaterialTheme.typography.titleMedium)
+                    AssistChip(
+                        onClick = {},
+                        label = { Text(spesa.categoria) },
+                        leadingIcon = { Icon(iconaCategoria(spesa.categoria), contentDescription = null, modifier = Modifier.size(16.dp)) },
+                        colors = AssistChipDefaults.assistChipColors(labelColor = MaterialTheme.colorScheme.onSurfaceVariant),
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                    Text(
+                        spesa.data.format(formatoData),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                }
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = formattaEuro(spesa.importo),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = AranciAccento
+                    color = Senape
                 )
                 IconButton(onClick = onElimina) {
                     Icon(Icons.Filled.Delete, contentDescription = "Elimina", tint = MaterialTheme.colorScheme.onSurfaceVariant)

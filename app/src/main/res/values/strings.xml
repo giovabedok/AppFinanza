@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">AppFinanza</string>
+    <string name="app_name">Bussola</string>
+    <string name="app_tagline">Quando arriva un euro, sa già dove andare.</string>
 </resources>

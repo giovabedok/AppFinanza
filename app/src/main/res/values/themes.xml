@@ -1,6 +1,6 @@
 <resources>
     <style name="Theme.AppFinanza" parent="android:Theme.Material.Light.NoActionBar">
-        <item name="android:statusBarColor">#1B3A5C</item>
-        <item name="android:windowBackground">#FFFFFF</item>
+        <item name="android:statusBarColor">#0F4C5C</item>
+        <item name="android:windowBackground">#FBF7EF</item>
     </style>
 </resources>

@@ -18,6 +18,8 @@ import androidx.navigation.compose.rememberNavController
 import com.appfinanza.cruscotto.ui.common.ViewModelFactory
 import com.appfinanza.cruscotto.ui.cruscotto.CruscottoScreen
 import com.appfinanza.cruscotto.ui.cruscotto.CruscottoViewModel
+import com.appfinanza.cruscotto.ui.impostazioni.ImportExportViewModel
+import com.appfinanza.cruscotto.ui.impostazioni.ImpostazioniScreen
 import com.appfinanza.cruscotto.ui.incassi.IncassiScreen
 import com.appfinanza.cruscotto.ui.incassi.IncassiViewModel
 import com.appfinanza.cruscotto.ui.ripartizione.RipartizioneScreen
@@ -75,6 +77,10 @@ fun AppFinanzaApp(factory: ViewModelFactory) {
             composable(AppDestination.RIPARTIZIONE.route) {
                 val viewModel: RipartizioneViewModel = viewModel(factory = factory)
                 RipartizioneScreen(viewModel)
+            }
+            composable(AppDestination.IMPOSTAZIONI.route) {
+                val viewModel: ImportExportViewModel = viewModel(factory = factory)
+                ImpostazioniScreen(viewModel)
             }
         }
     }

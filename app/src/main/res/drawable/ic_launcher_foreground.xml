@@ -4,16 +4,34 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
+    <!-- Anello esterno della bussola -->
     <path
-        android:fillColor="#FFF2CC"
-        android:pathData="M33,68 L45,68 L45,80 L33,80 Z" />
+        android:strokeColor="#FBF7EF"
+        android:strokeWidth="4"
+        android:fillColor="#00000000"
+        android:pathData="M54,22 A32,32 0 1,1 53.9,22" />
+    <!-- Tacche cardinali -->
     <path
-        android:fillColor="#FFF2CC"
-        android:pathData="M49,54 L61,54 L61,80 L49,80 Z" />
+        android:fillColor="#FBF7EF"
+        android:pathData="M52,16 L56,16 L54,24 Z" />
     <path
-        android:fillColor="#FFF2CC"
-        android:pathData="M65,38 L77,38 L77,80 L65,80 Z" />
+        android:fillColor="#FBF7EF"
+        android:pathData="M52,92 L56,92 L54,84 Z" />
+    <!-- Ago della bussola: nord corallo, sud crema -->
     <path
-        android:fillColor="#E8F3EC"
-        android:pathData="M30,80 L78,80 L78,84 L30,84 Z" />
+        android:fillColor="#E8735C"
+        android:pathData="M54,32 L64,54 L54,50 Z" />
+    <path
+        android:fillColor="#E8735C"
+        android:pathData="M54,32 L44,54 L54,50 Z" />
+    <path
+        android:fillColor="#FBF7EF"
+        android:pathData="M54,76 L64,54 L54,58 Z" />
+    <path
+        android:fillColor="#FBF7EF"
+        android:pathData="M54,76 L44,54 L54,58 Z" />
+    <!-- Perno centrale -->
+    <path
+        android:fillColor="#E0A32E"
+        android:pathData="M54,50 m-4,0 a4,4 0 1,0 8,0 a4,4 0 1,0 -8,0" />
 </vector>

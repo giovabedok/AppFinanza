@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.appfinanza.cruscotto.ui.common.formattaEuro
 import com.appfinanza.cruscotto.ui.common.formattaPercentuale
 import com.appfinanza.cruscotto.ui.cruscotto.VoceRipartizione
-import com.appfinanza.cruscotto.ui.theme.ColoriGrafico
+import com.appfinanza.cruscotto.ui.theme.ColoriRipartizione
 
 /**
  * Grafico a ciambella con la ripartizione del mese (tasse, spese, stipendio, fondo, futuro),
@@ -42,7 +42,7 @@ fun PieChartRipartizione(voci: List<VoceRipartizione>, modifier: Modifier = Modi
             voci.forEachIndexed { indice, voce ->
                 val angoloSweep = (voce.importo / totale * 360.0).toFloat()
                 drawArc(
-                    color = ColoriGrafico[indice % ColoriGrafico.size],
+                    color = ColoriRipartizione[indice % ColoriRipartizione.size],
                     startAngle = angoloIniziale,
                     sweepAngle = angoloSweep.coerceAtLeast(0f),
                     useCenter = false,
@@ -65,7 +65,7 @@ fun PieChartRipartizione(voci: List<VoceRipartizione>, modifier: Modifier = Modi
                     Box(
                         modifier = Modifier
                             .size(10.dp)
-                            .background(ColoriGrafico[indice % ColoriGrafico.size], CircleShape)
+                            .background(ColoriRipartizione[indice % ColoriRipartizione.size], CircleShape)
                     )
                     Column(Modifier.padding(start = 8.dp)) {
                         Text(voce.etichetta, style = MaterialTheme.typography.bodyMedium)
