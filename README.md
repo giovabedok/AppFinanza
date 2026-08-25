@@ -36,9 +36,12 @@ blu) e font Nunito/Inter:
 
 ## Import/export
 
-Incassi e spese si esportano e si importano con lo stesso schema a colonne
-(tipo, data, voce, dettaglio, importo) in tre formati intercambiabili,
-raggiungibili dalla scheda Regole:
+L'esportazione è un **backup completo**: sedute, spese, scadenze e tutte le
+impostazioni (percentuali di ripartizione, dati personali, parametri dello
+studio), non solo i movimenti. Tutto condivide lo stesso schema a colonne
+(tipo, data, voce, dettaglio, importo — le righe di impostazione usano voce
+come chiave e importo come valore, senza data) in tre formati
+intercambiabili, raggiungibili dalla scheda Regole:
 
 - **CSV** — separatore `;`, compatibile con Excel e Fogli Google.
 - **Excel (.xlsx)** — scritto e letto senza librerie esterne (il formato
@@ -46,7 +49,8 @@ raggiungibili dalla scheda Regole:
 - **TXT** — stesso schema, separatore tabulazione.
 
 L'importazione riconosce automaticamente il formato dall'estensione del file
-scelto e aggiunge le righe a quelle già presenti.
+scelto, aggiunge sedute/spese/scadenze a quelle già presenti e aggiorna le
+impostazioni trovate nel file (lasciando invariate quelle non presenti).
 
 ## Stack tecnico
 

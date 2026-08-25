@@ -66,8 +66,8 @@ object XlsxFormato {
         righe.forEachIndexed { indice, r ->
             val n = indice + 2
             sb.append("<row r=\"$n\">")
-            sb.append(cellaTesto("A$n", if (r.tipo == TipoRiga.INCASSO) "incasso" else "spesa"))
-            sb.append(cellaTesto("B$n", r.data.toString()))
+            sb.append(cellaTesto("A$n", nomeTipo(r.tipo)))
+            sb.append(cellaTesto("B$n", r.data?.toString().orEmpty()))
             sb.append(cellaTesto("C$n", r.voce))
             sb.append(cellaTesto("D$n", r.dettaglio))
             sb.append(cellaNumero("E$n", r.importo))
@@ -158,19 +158,32 @@ object XlsxFormato {
             }
             fun campo(nome: String): String? = intestazione[nome]?.let { valoriPerColonna[it] }
 
-            val tipo = when (campo("tipo")?.trim()?.lowercase()) {
-                "incasso" -> TipoRiga.INCASSO
-                "spesa" -> TipoRiga.SPESA
-                else -> null
-            } ?: continue
-            val data = campo("data")?.trim()?.let { analizzaData(it) } ?: continue
+            val tipo = tipoDaNome(campo("tipo")?.trim()) ?: continue
             val importo = campo("importo")?.trim()?.replace(",", ".")?.toDoubleOrNull() ?: continue
+            val dataTesto = campo("data")?.trim().orEmpty()
+            val data = if (dataTesto.isBlank()) null else analizzaData(dataTesto)
+            if (tipo != TipoRiga.IMPOSTAZIONE && data == null) continue
             val voce = campo("voce")?.trim().orEmpty()
             val dettaglio = campo("dettaglio")?.trim().orEmpty()
 
             risultato.add(RigaEsportata(tipo, data, voce, dettaglio, importo))
         }
         return risultato
+    }
+
+    private fun nomeTipo(tipo: TipoRiga): String = when (tipo) {
+        TipoRiga.INCASSO -> "incasso"
+        TipoRiga.SPESA -> "spesa"
+        TipoRiga.SCADENZA -> "scadenza"
+        TipoRiga.IMPOSTAZIONE -> "impostazione"
+    }
+
+    private fun tipoDaNome(nome: String?): TipoRiga? = when (nome?.lowercase()) {
+        "incasso" -> TipoRiga.INCASSO
+        "spesa" -> TipoRiga.SPESA
+        "scadenza" -> TipoRiga.SCADENZA
+        "impostazione" -> TipoRiga.IMPOSTAZIONE
+        else -> null
     }
 
     /** Accetta sia la data in testo ISO (nostro export) sia il numero seriale delle date Excel. */

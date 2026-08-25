@@ -18,10 +18,8 @@ import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.FileDownload
 import androidx.compose.material.icons.filled.GridOn
 import androidx.compose.material.icons.filled.TableChart
-import androidx.compose.material.icons.automirrored.filled.InsertDriveFile
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -37,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.appfinanza.cruscotto.data.io.FormatoFile
 import com.appfinanza.cruscotto.data.io.formatoDaEstensione
+import com.appfinanza.cruscotto.ui.components.PulsanteSecondario
 import com.appfinanza.cruscotto.ui.components.SchedaBordo
 import com.appfinanza.cruscotto.ui.theme.Corallo
 import com.appfinanza.cruscotto.ui.theme.Grigio
@@ -66,7 +65,12 @@ fun SezioneDatiEImpostazioni(
         val risultato = risultatoImportazione ?: return@LaunchedEffect
         mostraMessaggio(
             if (risultato.vuoto) "Nessuna riga valida trovata nel file selezionato."
-            else "Importati ${risultato.incassiImportati} incassi e ${risultato.speseImportate} spese."
+            else buildString {
+                append("Importati ${risultato.incassiImportati} incassi, ${risultato.speseImportate} spese")
+                if (risultato.scadenzeImportate > 0) append(", ${risultato.scadenzeImportate} scadenze")
+                if (risultato.impostazioniAggiornate) append(" e le impostazioni")
+                append(".")
+            }
         )
         viewModel.azzeraRisultato()
     }
@@ -88,27 +92,25 @@ fun SezioneDatiEImpostazioni(
         Column(Modifier.padding(16.dp)) {
             Text("I TUOI DATI", style = MaterialTheme.typography.labelSmall, color = Grigio)
             Text(
-                "Esporta o importa incassi e spese nel formato che preferisci.",
+                "Backup completo: sedute, spese, scadenze e impostazioni, nel formato che preferisci.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = Grigio,
                 modifier = Modifier.padding(top = 4.dp, bottom = 12.dp)
             )
             RigaFormato(Icons.Filled.TableChart, "CSV", "Compatibile con Excel e Fogli Google.", Salvia) {
-                esportaCsv.launch("le_mie_finanze.csv")
+                esportaCsv.launch("il_mio_studio_backup.csv")
             }
             RigaFormato(Icons.Filled.GridOn, "Excel (.xlsx)", "Foglio di calcolo pronto da aprire.", Petrolio) {
-                esportaXlsx.launch("le_mie_finanze.xlsx")
+                esportaXlsx.launch("il_mio_studio_backup.xlsx")
             }
             RigaFormato(Icons.Filled.Description, "TXT", "Testo semplice, leggibile ovunque.", Corallo) {
-                esportaTxt.launch("le_mie_finanze.txt")
+                esportaTxt.launch("il_mio_studio_backup.txt")
             }
-            OutlinedButton(
+            PulsanteSecondario(
+                testo = "Importa un backup (.csv, .xlsx, .txt)",
                 onClick = { importaFile.launch(arrayOf("*/*")) },
                 modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
-            ) {
-                Icon(Icons.AutoMirrored.Filled.InsertDriveFile, contentDescription = null, modifier = Modifier.padding(end = 8.dp))
-                Text("Importa da un file .csv, .xlsx o .txt")
-            }
+            )
         }
     }
 }

@@ -27,7 +27,6 @@ import androidx.compose.material.icons.filled.Insights
 import androidx.compose.material.icons.filled.MedicalServices
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PieChart
-import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -54,6 +53,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.appfinanza.cruscotto.ui.common.formattaEuro
+import com.appfinanza.cruscotto.ui.components.PulsanteSecondario
 import com.appfinanza.cruscotto.ui.components.SchedaBordo
 import com.appfinanza.cruscotto.ui.impostazioni.ImportExportViewModel
 import com.appfinanza.cruscotto.ui.impostazioni.SezioneDatiEImpostazioni
@@ -160,8 +160,9 @@ fun RipartizioneScreen(
                     modifier = Modifier.padding(top = 4.dp)
                 )
 
-                Button(
-                    enabled = percentualiCorrette,
+                PulsanteSecondario(
+                    testo = "Salva percentuali",
+                    abilitato = percentualiCorrette,
                     modifier = Modifier.padding(top = 12.dp),
                     onClick = {
                         viewModel.aggiornaPercentuali(
@@ -173,7 +174,7 @@ fun RipartizioneScreen(
                         )
                         mostraMessaggio("Percentuali salvate.")
                     }
-                ) { Text("Salva percentuali") }
+                )
             }
         }
 
@@ -207,7 +208,8 @@ fun RipartizioneScreen(
                     color = Grigio,
                     modifier = Modifier.padding(top = 8.dp)
                 )
-                Button(
+                PulsanteSecondario(
+                    testo = "Salva parametri studio",
                     modifier = Modifier.padding(top = 12.dp),
                     onClick = {
                         viewModel.aggiornaStudio(
@@ -217,7 +219,7 @@ fun RipartizioneScreen(
                         )
                         mostraMessaggio("Parametri dello studio salvati.")
                     }
-                ) { Text("Salva parametri studio") }
+                )
             }
         }
 
@@ -238,7 +240,8 @@ fun RipartizioneScreen(
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     modifier = Modifier.fillMaxWidth()
                 )
-                Button(
+                PulsanteSecondario(
+                    testo = "Salva dati personali",
                     modifier = Modifier.padding(top = 12.dp),
                     onClick = {
                         viewModel.aggiornaDatiPersonali(
@@ -247,7 +250,7 @@ fun RipartizioneScreen(
                         )
                         mostraMessaggio("Dati personali salvati.")
                     }
-                ) { Text("Salva dati personali") }
+                )
             }
         }
 
@@ -294,16 +297,19 @@ fun RipartizioneScreen(
                         modifier = Modifier.weight(1f)
                     )
                 }
-                Button(
-                    enabled = titoloNuovaScadenza.isNotBlank() && dataNuovaScadenza != null,
+                PulsanteSecondario(
+                    testo = "Aggiungi scadenza",
+                    abilitato = titoloNuovaScadenza.isNotBlank() && dataNuovaScadenza != null,
                     modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
                     onClick = {
-                        val data = dataNuovaScadenza ?: return@Button
-                        viewModel.aggiungiScadenza(titoloNuovaScadenza.trim(), data)
-                        titoloNuovaScadenza = ""
-                        dataNuovaScadenza = null
+                        val data = dataNuovaScadenza
+                        if (data != null) {
+                            viewModel.aggiungiScadenza(titoloNuovaScadenza.trim(), data)
+                            titoloNuovaScadenza = ""
+                            dataNuovaScadenza = null
+                        }
                     }
-                ) { Text("Aggiungi scadenza") }
+                )
             }
         }
 

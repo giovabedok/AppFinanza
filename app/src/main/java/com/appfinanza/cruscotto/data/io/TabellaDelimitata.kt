@@ -17,8 +17,8 @@ object TabellaDelimitata {
         sb.append(INTESTAZIONI.joinToString(delimitatore.toString()) { quota(it, delimitatore) }).append('\n')
         righe.forEach { r ->
             val campi = listOf(
-                if (r.tipo == TipoRiga.INCASSO) "incasso" else "spesa",
-                r.data.toString(),
+                nomeTipo(r.tipo),
+                r.data?.toString().orEmpty(),
                 r.voce,
                 r.dettaglio,
                 formattaImporto(r.importo)
@@ -39,24 +39,35 @@ object TabellaDelimitata {
         val idxVoce = indiceDi("voce")
         val idxDettaglio = indiceDi("dettaglio")
         val idxImporto = indiceDi("importo")
-        if (idxTipo < 0 || idxData < 0 || idxImporto < 0) return emptyList()
+        if (idxTipo < 0 || idxImporto < 0) return emptyList()
 
         return righe.drop(1).mapNotNull { riga ->
             val campi = analizzaRiga(riga, delimitatore)
-            val tipoTesto = campi.getOrNull(idxTipo)?.trim()?.lowercase(Locale.ITALY)
-            val tipo = when (tipoTesto) {
-                "incasso" -> TipoRiga.INCASSO
-                "spesa" -> TipoRiga.SPESA
-                else -> null
-            } ?: return@mapNotNull null
-            val data = campi.getOrNull(idxData)?.trim()?.let { runCatching { LocalDate.parse(it) }.getOrNull() }
-                ?: return@mapNotNull null
+            val tipo = tipoDaNome(campi.getOrNull(idxTipo)?.trim()) ?: return@mapNotNull null
             val importo = campi.getOrNull(idxImporto)?.trim()?.replace(",", ".")?.toDoubleOrNull()
                 ?: return@mapNotNull null
+            val dataTesto = campi.getOrNull(idxData)?.trim().orEmpty()
+            val data = if (dataTesto.isBlank()) null else runCatching { LocalDate.parse(dataTesto) }.getOrNull()
+            if (tipo != TipoRiga.IMPOSTAZIONE && data == null) return@mapNotNull null
             val voce = campi.getOrNull(idxVoce)?.trim().orEmpty()
             val dettaglio = campi.getOrNull(idxDettaglio)?.trim().orEmpty()
             RigaEsportata(tipo, data, voce, dettaglio, importo)
         }
+    }
+
+    private fun nomeTipo(tipo: TipoRiga): String = when (tipo) {
+        TipoRiga.INCASSO -> "incasso"
+        TipoRiga.SPESA -> "spesa"
+        TipoRiga.SCADENZA -> "scadenza"
+        TipoRiga.IMPOSTAZIONE -> "impostazione"
+    }
+
+    private fun tipoDaNome(nome: String?): TipoRiga? = when (nome?.lowercase(Locale.ITALY)) {
+        "incasso" -> TipoRiga.INCASSO
+        "spesa" -> TipoRiga.SPESA
+        "scadenza" -> TipoRiga.SCADENZA
+        "impostazione" -> TipoRiga.IMPOSTAZIONE
+        else -> null
     }
 
     private fun formattaImporto(valore: Double): String {
