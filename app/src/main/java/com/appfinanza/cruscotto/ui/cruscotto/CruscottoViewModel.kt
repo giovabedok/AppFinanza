@@ -3,6 +3,7 @@ package com.appfinanza.cruscotto.ui.cruscotto
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.appfinanza.cruscotto.data.model.Incasso
+import com.appfinanza.cruscotto.data.model.Scadenza
 import com.appfinanza.cruscotto.data.model.Spesa
 import com.appfinanza.cruscotto.data.repository.FinanzaRepository
 import com.appfinanza.cruscotto.data.settings.PeriodoSelezionato
@@ -12,6 +13,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 
 /**
  * Replica le formule del foglio "Cruscotto": SUMIFS su Incassi/Spese filtrati per codice mese,
@@ -28,9 +31,10 @@ class CruscottoViewModel(private val repository: FinanzaRepository) : ViewModel(
                 repository.incassi,
                 repository.spese,
                 repository.ripartizione,
-                repository.periodoSelezionato
-            ) { incassi, spese, ripartizione, periodo ->
-                costruisciStato(incassi, spese, ripartizione, periodo)
+                repository.periodoSelezionato,
+                repository.scadenze
+            ) { incassi, spese, ripartizione, periodo, scadenze ->
+                costruisciStato(incassi, spese, ripartizione, periodo, scadenze)
             }.collect { _uiState.value = it }
         }
     }
@@ -39,11 +43,20 @@ class CruscottoViewModel(private val repository: FinanzaRepository) : ViewModel(
         incassi: List<Incasso>,
         spese: List<Spesa>,
         ripartizione: RipartizioneSettings,
-        periodo: PeriodoSelezionato
+        periodo: PeriodoSelezionato,
+        scadenze: List<Scadenza>
     ): CruscottoUiState {
         val codiceMese = periodo.codiceMese
-        val incassiDelMese = incassi.filter { it.codiceMese == codiceMese }.sumOf { it.importo }
+        val incassiDelMeseLista = incassi.filter { it.codiceMese == codiceMese }
+        val incassiDelMese = incassiDelMeseLista.sumOf { it.importo }
         val speseDelMese = spese.filter { it.codiceMese == codiceMese }.sumOf { it.importo }
+
+        val oggi = LocalDate.now()
+        val prossimeScadenze = scadenze
+            .map { VoceScadenza(it.titolo, ChronoUnit.DAYS.between(oggi, it.data)) }
+            .filter { it.giorni >= -3 }
+            .sortedBy { it.giorni }
+            .take(3)
         val incassiTotaliAnno = incassi.filter { it.data.year == periodo.anno }.sumOf { it.importo }
 
         val datiMensili = (1..12).map { m ->
@@ -72,6 +85,7 @@ class CruscottoViewModel(private val repository: FinanzaRepository) : ViewModel(
             anno = periodo.anno,
             mese = periodo.mese,
             incassiDelMese = incassiDelMese,
+            numeroSedute = incassiDelMeseLista.size,
             speseProfessionaliDelMese = speseDelMese,
             daAccantonareTasse = incassiDelMese * ripartizione.pctTasse,
             stipendioPersonale = incassiDelMese * ripartizione.pctStipendio,
@@ -83,6 +97,7 @@ class CruscottoViewModel(private val repository: FinanzaRepository) : ViewModel(
             spesePersonaliMedie = ripartizione.spesePersonaliMedie,
             datiMensili = datiMensili,
             ripartizioneMese = ripartizioneMese,
+            prossimeScadenze = prossimeScadenze,
             percentuali = listOf(
                 ripartizione.pctTasse,
                 ripartizione.pctSpeseProfessionali,

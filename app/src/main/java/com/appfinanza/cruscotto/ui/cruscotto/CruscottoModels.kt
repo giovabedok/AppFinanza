@@ -14,10 +14,16 @@ data class VoceRipartizione(
     val importo: Double
 )
 
+data class VoceScadenza(
+    val titolo: String,
+    val giorni: Long
+)
+
 data class CruscottoUiState(
     val anno: Int = LocalDate.now().year,
     val mese: Int = LocalDate.now().monthValue,
     val incassiDelMese: Double = 0.0,
+    val numeroSedute: Int = 0,
     val speseProfessionaliDelMese: Double = 0.0,
     val daAccantonareTasse: Double = 0.0,
     val stipendioPersonale: Double = 0.0,
@@ -30,6 +36,7 @@ data class CruscottoUiState(
     val datiMensili: List<DatoMensile> = emptyList(),
     val ripartizioneMese: List<VoceRipartizione> = emptyList(),
     val percentuali: List<Double> = emptyList(),
+    val prossimeScadenze: List<VoceScadenza> = emptyList(),
     val percentualiCorrette: Boolean = true,
     val caricato: Boolean = false
 ) {

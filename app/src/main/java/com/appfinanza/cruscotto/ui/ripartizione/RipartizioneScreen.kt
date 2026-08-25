@@ -18,16 +18,26 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.Explore
 import androidx.compose.material.icons.filled.Insights
+import androidx.compose.material.icons.filled.MedicalServices
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PieChart
 import androidx.compose.material3.Button
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -48,10 +58,15 @@ import com.appfinanza.cruscotto.ui.components.SchedaBordo
 import com.appfinanza.cruscotto.ui.impostazioni.ImportExportViewModel
 import com.appfinanza.cruscotto.ui.impostazioni.SezioneDatiEImpostazioni
 import com.appfinanza.cruscotto.ui.theme.ColoriRipartizione
+import com.appfinanza.cruscotto.ui.theme.Corallo
 import com.appfinanza.cruscotto.ui.theme.Grigio
 import com.appfinanza.cruscotto.ui.theme.Petrolio
 import com.appfinanza.cruscotto.ui.theme.RossoErrore
 import com.appfinanza.cruscotto.ui.theme.Salvia
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun RipartizioneScreen(
@@ -69,7 +84,14 @@ fun RipartizioneScreen(
     var testoFuturo by remember { mutableStateOf("5") }
     var testoFondoAccumulato by remember { mutableStateOf("0") }
     var testoSpeseMedie by remember { mutableStateOf("1800") }
+    var testoTariffa by remember { mutableStateOf("70") }
+    var testoSeduteSettimana by remember { mutableStateOf("20") }
+    var testoOreNonFatturabili by remember { mutableStateOf("8") }
     var inizializzato by remember { mutableStateOf(false) }
+
+    var titoloNuovaScadenza by remember { mutableStateOf("") }
+    var dataNuovaScadenza by remember { mutableStateOf<LocalDate?>(null) }
+    var mostraDatePickerScadenza by remember { mutableStateOf(false) }
 
     LaunchedEffect(uiState.caricato) {
         if (uiState.caricato && !inizializzato) {
@@ -81,6 +103,9 @@ fun RipartizioneScreen(
             testoFuturo = formattaPercentoModificabile(s.pctFuturo)
             testoFondoAccumulato = formattaNumeroModificabile(s.fondoSicurezzaAccumulato)
             testoSpeseMedie = formattaNumeroModificabile(s.spesePersonaliMedie)
+            testoTariffa = formattaNumeroModificabile(uiState.studio.tariffa)
+            testoSeduteSettimana = formattaNumeroModificabile(uiState.studio.seduteSettimana)
+            testoOreNonFatturabili = formattaNumeroModificabile(uiState.studio.oreNonFatturabiliSett)
             inizializzato = true
         }
     }
@@ -152,6 +177,50 @@ fun RipartizioneScreen(
             }
         }
 
+        TitoloSezione(Icons.Filled.MedicalServices, "Il tuo studio")
+        SchedaBordo {
+            Column(Modifier.padding(16.dp)) {
+                OutlinedTextField(
+                    value = testoTariffa,
+                    onValueChange = { testoTariffa = it },
+                    label = { Text("Tariffa a seduta (€)") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+                )
+                OutlinedTextField(
+                    value = testoSeduteSettimana,
+                    onValueChange = { testoSeduteSettimana = it },
+                    label = { Text("Sedute a settimana (max)") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+                )
+                OutlinedTextField(
+                    value = testoOreNonFatturabili,
+                    onValueChange = { testoOreNonFatturabili = it },
+                    label = { Text("Ore non fatturabili a settimana") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Text(
+                    "Nelle ore non fatturabili conta cartelle, supervisione, formazione, contabilità, telefonate e primi contatti.",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = Grigio,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+                Button(
+                    modifier = Modifier.padding(top = 12.dp),
+                    onClick = {
+                        viewModel.aggiornaStudio(
+                            tariffa = testoTariffa.replace(",", ".").toDoubleOrNull() ?: 0.0,
+                            seduteSettimana = testoSeduteSettimana.replace(",", ".").toDoubleOrNull() ?: 0.0,
+                            oreNonFatturabiliSett = testoOreNonFatturabili.replace(",", ".").toDoubleOrNull() ?: 0.0
+                        )
+                        mostraMessaggio("Parametri dello studio salvati.")
+                    }
+                ) { Text("Salva parametri studio") }
+            }
+        }
+
         TitoloSezione(Icons.Filled.Person, "I tuoi dati personali")
         SchedaBordo {
             Column(Modifier.padding(16.dp)) {
@@ -182,6 +251,62 @@ fun RipartizioneScreen(
             }
         }
 
+        TitoloSezione(Icons.Filled.Event, "Scadenze")
+        SchedaBordo {
+            Column(Modifier.padding(16.dp)) {
+                if (uiState.scadenze.isEmpty()) {
+                    Text("Nessuna scadenza registrata.", style = MaterialTheme.typography.bodyMedium, color = Grigio)
+                } else {
+                    uiState.scadenze.forEach { scadenza ->
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(scadenza.titolo, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
+                            Text(
+                                scadenza.data.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+                                style = MaterialTheme.typography.labelSmall,
+                                color = Grigio
+                            )
+                            IconButton(onClick = { viewModel.eliminaScadenza(scadenza) }) {
+                                Icon(Icons.Filled.Close, contentDescription = "Elimina scadenza", tint = Grigio, modifier = Modifier.size(18.dp))
+                            }
+                        }
+                    }
+                }
+                Row(modifier = Modifier.fillMaxWidth().padding(top = 12.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    OutlinedTextField(
+                        value = titoloNuovaScadenza,
+                        onValueChange = { titoloNuovaScadenza = it },
+                        placeholder = { Text("Cosa scade") },
+                        modifier = Modifier.weight(1f)
+                    )
+                    OutlinedTextField(
+                        value = dataNuovaScadenza?.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) ?: "",
+                        onValueChange = {},
+                        readOnly = true,
+                        placeholder = { Text("Data") },
+                        trailingIcon = {
+                            IconButton(onClick = { mostraDatePickerScadenza = true }) {
+                                Icon(Icons.Filled.CalendarMonth, contentDescription = "Scegli data")
+                            }
+                        },
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+                Button(
+                    enabled = titoloNuovaScadenza.isNotBlank() && dataNuovaScadenza != null,
+                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                    onClick = {
+                        val data = dataNuovaScadenza ?: return@Button
+                        viewModel.aggiungiScadenza(titoloNuovaScadenza.trim(), data)
+                        titoloNuovaScadenza = ""
+                        dataNuovaScadenza = null
+                    }
+                ) { Text("Aggiungi scadenza") }
+            }
+        }
+
         TitoloSezione(Icons.Filled.Insights, "Le tre medie da guardare")
         SchedaBordo {
             Column(Modifier.padding(16.dp)) {
@@ -197,7 +322,7 @@ fun RipartizioneScreen(
         TitoloSezione(Icons.Filled.Explore, "Informazioni")
         SchedaBordo {
             Column(Modifier.padding(16.dp)) {
-                Text("Le mie Finanze", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = Petrolio)
+                Text("Il mio studio", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = Petrolio)
                 Text("Versione 1.0", style = MaterialTheme.typography.labelSmall, color = Grigio)
                 Text(
                     "Sviluppata da Giovanni Bedocchi",
@@ -231,6 +356,27 @@ fun RipartizioneScreen(
             color = Grigio,
             modifier = Modifier.padding(top = 24.dp, bottom = 8.dp)
         )
+    }
+
+    if (mostraDatePickerScadenza) {
+        val statoDatePicker = rememberDatePickerState(
+            initialSelectedDateMillis = (dataNuovaScadenza ?: LocalDate.now())
+                .atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli()
+        )
+        DatePickerDialog(
+            onDismissRequest = { mostraDatePickerScadenza = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    statoDatePicker.selectedDateMillis?.let { millis ->
+                        dataNuovaScadenza = Instant.ofEpochMilli(millis).atZone(ZoneOffset.UTC).toLocalDate()
+                    }
+                    mostraDatePickerScadenza = false
+                }) { Text("OK") }
+            },
+            dismissButton = { TextButton(onClick = { mostraDatePickerScadenza = false }) { Text("Annulla") } }
+        ) {
+            DatePicker(state = statoDatePicker)
+        }
     }
 }
 

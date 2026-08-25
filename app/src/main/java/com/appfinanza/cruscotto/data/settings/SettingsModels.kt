@@ -25,3 +25,10 @@ data class PeriodoSelezionato(
     val codiceMese: Int
         get() = anno * 100 + mese
 }
+
+/** Parametri dello studio: tariffa a seduta, capacità settimanale, ore non fatturabili. */
+data class StudioSettings(
+    val tariffa: Double = 70.0,
+    val seduteSettimana: Double = 20.0,
+    val oreNonFatturabiliSett: Double = 8.0
+)

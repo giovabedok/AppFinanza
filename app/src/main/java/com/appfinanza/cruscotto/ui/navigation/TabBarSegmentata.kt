@@ -15,38 +15,62 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+
+/** Sfondo "sabbia" tenue condiviso dai selettori a pillola dell'app. */
+val Sabbia = Color(0xFFEFE9DD)
 
 /**
- * Selettore a pillola con le quattro sezioni dell'app, come nel mockup:
- * sfondo tenue con la scheda attiva sollevata su una pillola bianca.
+ * Selettore a pillola generico: sfondo tenue con la voce attiva sollevata su
+ * una pillola bianca. Usato sia per la navigazione principale sia per i
+ * toggle interni (ad esempio Sedute/Spese nella scheda Movimenti).
  */
+@Composable
+fun PillTabBar(
+    etichette: List<String>,
+    indiceSelezionato: Int,
+    onSeleziona: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+    dimensioneTesto: androidx.compose.ui.unit.TextUnit = 13.sp
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(Sabbia, RoundedCornerShape(12.dp))
+            .padding(4.dp),
+        horizontalArrangement = Arrangement.spacedBy(2.dp)
+    ) {
+        etichette.forEachIndexed { indice, etichetta ->
+            val attiva = indice == indiceSelezionato
+            Text(
+                text = etichetta,
+                textAlign = TextAlign.Center,
+                fontSize = dimensioneTesto,
+                fontWeight = if (attiva) FontWeight.Bold else FontWeight.Medium,
+                color = if (attiva) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier
+                    .weight(1f)
+                    .clickable { onSeleziona(indice) }
+                    .background(if (attiva) Color.White else Color.Transparent, RoundedCornerShape(9.dp))
+                    .padding(vertical = 10.dp)
+            )
+        }
+    }
+}
+
+/** Selettore a pillola con le cinque sezioni dell'app. */
 @Composable
 fun TabBarSegmentata(
     selezionata: AppDestination,
     onSeleziona: (AppDestination) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(Color(0xFFEFE9DD), RoundedCornerShape(12.dp))
-            .padding(4.dp),
-        horizontalArrangement = Arrangement.spacedBy(2.dp)
-    ) {
-        AppDestination.entries.forEach { destinazione ->
-            val attiva = destinazione == selezionata
-            Text(
-                text = destinazione.etichetta,
-                textAlign = TextAlign.Center,
-                fontWeight = if (attiva) FontWeight.Bold else FontWeight.Medium,
-                color = if (attiva) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier
-                    .weight(1f)
-                    .clickable { onSeleziona(destinazione) }
-                    .background(if (attiva) Color.White else Color.Transparent, RoundedCornerShape(9.dp))
-                    .padding(vertical = 10.dp)
-            )
-        }
-    }
+    val destinazioni = AppDestination.entries
+    PillTabBar(
+        etichette = destinazioni.map { it.etichetta },
+        indiceSelezionato = destinazioni.indexOf(selezionata),
+        onSeleziona = { indice -> onSeleziona(destinazioni[indice]) },
+        modifier = modifier,
+        dimensioneTesto = 12.sp
+    )
 }

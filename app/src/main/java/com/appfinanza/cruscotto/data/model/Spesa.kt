@@ -30,19 +30,30 @@ data class Spesa(
     }
 }
 
-/** Categorie disponibili, identiche al menu a tendina del foglio "Spese". */
+/** Categorie di spesa di studio disponibili nel menu a tendina. */
 object CategorieSpesa {
     val LISTA = listOf(
         "Studio",
         "Commercialista",
+        "ENPAP",
         "Formazione",
         "Supervisione",
-        "Assicurazioni",
+        "Assicurazione",
         "Software",
         "Telefono e Internet",
-        "Marketing e sito",
+        "Sito e marketing",
         "Trasporti",
-        "Attrezzature",
+        "Altro"
+    )
+}
+
+/** Tipi di seduta disponibili nel menu a tendina degli incassi. */
+object TipiSeduta {
+    val LISTA = listOf(
+        "Seduta individuale",
+        "Coppia",
+        "Online",
+        "Primo colloquio",
         "Altro"
     )
 }

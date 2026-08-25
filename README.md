@@ -1,34 +1,38 @@
-# Le mie Finanze
+# Il mio studio
 
-App Android (Kotlin + Jetpack Compose) che aiuta chi lavora in proprio a
-sapere sempre dove va ogni euro incassato: incassi, spese professionali,
-ripartizione automatica dell'incasso e un cruscotto mensile con grafici.
+App Android (Kotlin + Jetpack Compose) per la gestione del lavoro di uno
+studio privato (psicologa/psicologo): sedute pagate, spese di studio,
+scadenze, riempimento dell'agenda, compenso orario reale e persone seguite.
 
 Sviluppata da **Giovanni Bedocchi** — giovanni@bedocchi.it
 
 ## Schermate
 
-Navigazione a quattro sezioni con selettore a pillola in alto (senza barra
-di navigazione inferiore), palette calda (crema, petrolio, teal, corallo,
-senape, salvia, blu) e font Nunito/Inter, in stile con il mockup di
-riferimento del cruscotto:
+Navigazione a cinque sezioni con selettore a pillola in alto (senza barra di
+navigazione inferiore), un unico mese selezionato condiviso da tutte le
+schermate, palette calda (crema, petrolio, teal, corallo, senape, salvia,
+blu) e font Nunito/Inter:
 
 - **Il mese**: incassato del mese con il "nastro" — la fascia colorata che
   mostra come si divide ogni euro —, le cinque voci di ripartizione (tasse,
-  spese professionali, stipendio, fondo sicurezza, futuro), le spese
-  professionali del mese con barra rispetto alla quota prevista, i mesi di
-  autonomia con indicatore a tacche e l'andamento degli incassi sui 12 mesi
+  spese di studio, stipendio, fondo sicurezza, futuro), le spese di studio
+  con barra rispetto alla quota prevista, i mesi di autonomia con indicatore
+  a tacche, le prossime scadenze e l'andamento degli incassi sui 12 mesi
   dell'anno con media tratteggiata.
-- **Incassi**: form scuro sempre visibile per registrare un pagamento
-  (data, cliente, prestazione, importo) ed elenco del mese selezionato.
-- **Spese**: form scuro per registrare una spesa professionale con categoria
-  a tendina (Studio, Commercialista, Formazione, Supervisione, Assicurazioni,
-  Software, Telefono e Internet, Marketing e sito, Trasporti, Attrezzature,
-  Altro) ed elenco del mese selezionato.
+- **Movimenti**: un unico form scuro con toggle Sedute incassate/Spese di
+  studio — data, importo (con scorciatoia per la tariffa abituale), paziente
+  o descrizione, tipo di seduta o categoria — ed elenco del mese selezionato.
+- **Studio**: quanto è pieno il mese (sedute su capacità settimanale),
+  tariffa nominale vs compenso orario reale (al netto delle ore non
+  fatturabili) e sedute per tipo.
+- **Persone**: le persone seguite nell'anno, con totale, numero di sedute,
+  ultima visita e un avviso quando una persona pesa più del 30% degli
+  incassi dell'anno.
 - **Regole**: percentuali di divisione dell'incasso (devono sommare 100%),
-  dati personali (fondo sicurezza accumulato, spese personali medie), le "tre
-  medie" dell'anno, l'esportazione/importazione dei dati e le informazioni
-  sull'app e sullo sviluppatore.
+  parametri dello studio (tariffa, sedute a settimana, ore non fatturabili),
+  dati personali, scadenze (aggiungi/elimina), le "tre medie" dell'anno,
+  l'esportazione/importazione dei dati e le informazioni sull'app e sullo
+  sviluppatore.
 
 ## Import/export
 
@@ -47,9 +51,11 @@ scelto e aggiunge le righe a quelle già presenti.
 ## Stack tecnico
 
 - Kotlin, Jetpack Compose (Material 3), font Nunito/Inter (Google Fonts)
-- Room (persistenza di incassi e spese)
-- DataStore Preferences (percentuali di ripartizione, periodo selezionato)
+- Room (incassi, spese, scadenze)
+- DataStore Preferences (percentuali di ripartizione, parametri dello
+  studio, periodo selezionato — condiviso da tutte le schermate)
 - Navigazione a stato semplice con tab bar a pillola personalizzata
+  (riusata anche per il toggle Sedute/Spese nella scheda Movimenti)
 - Grafici e "nastro" di ripartizione disegnati con `Canvas`/Compose puro
   (nessuna libreria esterna)
 - Import/export CSV, XLSX, TXT tramite Storage Access Framework, nessuna

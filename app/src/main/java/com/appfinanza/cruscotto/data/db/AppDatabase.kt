@@ -6,13 +6,15 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.appfinanza.cruscotto.data.model.Incasso
+import com.appfinanza.cruscotto.data.model.Scadenza
 import com.appfinanza.cruscotto.data.model.Spesa
 
-@Database(entities = [Incasso::class, Spesa::class], version = 1, exportSchema = false)
+@Database(entities = [Incasso::class, Spesa::class, Scadenza::class], version = 2, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun incassoDao(): IncassoDao
     abstract fun spesaDao(): SpesaDao
+    abstract fun scadenzaDao(): ScadenzaDao
 
     companion object {
         @Volatile
@@ -24,7 +26,9 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "appfinanza.db"
-                ).build().also { INSTANCE = it }
+                )
+                    .fallbackToDestructiveMigration()
+                    .build().also { INSTANCE = it }
             }
     }
 }

@@ -10,16 +10,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ChevronLeft
-import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.WarningAmber
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,6 +36,7 @@ import com.appfinanza.cruscotto.ui.common.formattaEuro
 import com.appfinanza.cruscotto.ui.components.AndamentoAnnuale
 import com.appfinanza.cruscotto.ui.components.BarraAutonomia
 import com.appfinanza.cruscotto.ui.components.NastroRipartizione
+import com.appfinanza.cruscotto.ui.components.NavMese
 import com.appfinanza.cruscotto.ui.components.SchedaBordo
 import com.appfinanza.cruscotto.ui.theme.Bordo
 import com.appfinanza.cruscotto.ui.theme.Corallo
@@ -44,7 +44,6 @@ import com.appfinanza.cruscotto.ui.theme.Grigio
 import com.appfinanza.cruscotto.ui.theme.Petrolio
 import com.appfinanza.cruscotto.ui.theme.RossoErrore
 import com.appfinanza.cruscotto.ui.theme.Senape
-import com.appfinanza.cruscotto.ui.theme.Teal
 
 @Composable
 fun CruscottoScreen(viewModel: CruscottoViewModel) {
@@ -56,10 +55,11 @@ fun CruscottoScreen(viewModel: CruscottoViewModel) {
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 20.dp)
     ) {
-        SelettorePeriodo(
+        NavMese(
             anno = uiState.anno,
             mese = uiState.mese,
-            onCambiaPeriodo = viewModel::cambiaPeriodo
+            onCambiaPeriodo = viewModel::cambiaPeriodo,
+            modifier = Modifier.padding(top = 16.dp)
         )
 
         if (!uiState.percentualiCorrette) {
@@ -87,6 +87,12 @@ fun CruscottoScreen(viewModel: CruscottoViewModel) {
                     style = MaterialTheme.typography.headlineMedium.copy(fontSize = 40.sp),
                     color = Petrolio,
                     modifier = Modifier.padding(top = 4.dp)
+                )
+                Text(
+                    text = if (uiState.numeroSedute == 1) "1 seduta registrata" else "${uiState.numeroSedute} sedute registrate",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Grigio,
+                    modifier = Modifier.padding(top = 2.dp)
                 )
                 NastroRipartizione(
                     percentuali = uiState.percentuali,
@@ -180,6 +186,45 @@ fun CruscottoScreen(viewModel: CruscottoViewModel) {
             }
         }
 
+        if (uiState.prossimeScadenze.isNotEmpty()) {
+            SchedaBordo(modifier = Modifier.padding(top = 16.dp)) {
+                Column(Modifier.padding(16.dp)) {
+                    Text("PROSSIME SCADENZE", style = MaterialTheme.typography.labelSmall, color = Grigio)
+                    Column(Modifier.padding(top = 12.dp)) {
+                        uiState.prossimeScadenze.forEach { scadenza ->
+                            val urgente = scadenza.giorni <= 30
+                            Row(
+                                modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    Icons.Filled.Event,
+                                    contentDescription = null,
+                                    tint = if (urgente) Corallo else Grigio,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                                Text(
+                                    scadenza.titolo,
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier.padding(start = 10.dp).weight(1f)
+                                )
+                                Text(
+                                    text = when {
+                                        scadenza.giorni < 0 -> "scaduta"
+                                        scadenza.giorni == 0L -> "oggi"
+                                        else -> "fra ${scadenza.giorni} g"
+                                    },
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = if (urgente) Corallo else Grigio
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         SchedaBordo(modifier = Modifier.padding(top = 16.dp, bottom = 16.dp)) {
             Column(Modifier.padding(16.dp)) {
                 Text("ULTIMI DODICI MESI", style = MaterialTheme.typography.labelSmall, color = Grigio)
@@ -234,38 +279,6 @@ private fun RigaVoce(
                 )
                 Text("${(percentuale * 100).let { if (it == it.toInt().toDouble()) it.toInt().toString() else "%.0f".format(it) }}%", style = MaterialTheme.typography.labelSmall, color = Grigio)
             }
-        }
-    }
-}
-
-@Composable
-private fun SelettorePeriodo(anno: Int, mese: Int, onCambiaPeriodo: (Int, Int) -> Unit) {
-    val nomiMesi = CruscottoUiState.NOMI_MESI
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        IconButton(onClick = {
-            val nuovoMese = if (mese == 1) 12 else mese - 1
-            val nuovoAnno = if (mese == 1) anno - 1 else anno
-            onCambiaPeriodo(nuovoAnno, nuovoMese)
-        }) {
-            Icon(Icons.Filled.ChevronLeft, contentDescription = "Mese precedente", tint = Teal)
-        }
-        Text(
-            "${nomiMesi[mese - 1]} $anno",
-            style = MaterialTheme.typography.titleLarge,
-            color = Petrolio
-        )
-        IconButton(onClick = {
-            val nuovoMese = if (mese == 12) 1 else mese + 1
-            val nuovoAnno = if (mese == 12) anno + 1 else anno
-            onCambiaPeriodo(nuovoAnno, nuovoMese)
-        }) {
-            Icon(Icons.Filled.ChevronRight, contentDescription = "Mese successivo", tint = Teal)
         }
     }
 }

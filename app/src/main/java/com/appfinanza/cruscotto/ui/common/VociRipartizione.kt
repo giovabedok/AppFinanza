@@ -12,8 +12,8 @@ data class VoceRipartizioneInfo(val etichetta: String, val nota: String, val col
 /** Le cinque voci di ripartizione dell'incasso, in ordine fisso: tasse, spese, stipendio, fondo, futuro. */
 val VOCI_RIPARTIZIONE = listOf(
     VoceRipartizioneInfo("Tasse e contributi", "Da spostare subito sul conto tasse", Petrolio),
-    VoceRipartizioneInfo("Spese professionali", "Studio, software, formazione", Senape),
+    VoceRipartizioneInfo("Spese di studio", "Affitto, software, formazione", Senape),
     VoceRipartizioneInfo("Stipendio personale", "Il denaro davvero tuo", Corallo),
     VoceRipartizioneInfo("Fondo sicurezza", "Mesi deboli e imprevisti", Blu),
-    VoceRipartizioneInfo("Futuro", "Risparmio e investimenti", Salvia)
+    VoceRipartizioneInfo("Futuro", "Risparmio e pensione integrativa", Salvia)
 )
